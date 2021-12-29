@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+			const scene = new THREE.Scene();
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight); // 场景大小
+            renderer.setClearColor(0xeeeeee, 1.0); // 预设背景颜色
+            renderer.shadowMap.enable = true; // 阴影效果
+
+            // 将渲染器的DOM绑到网页上
+            document.body.appendChild(renderer.domElement)
+
+            // 透視投影相機
+            const camera = new THREE.PerspectiveCamera(
+                45,window.innerWidth/window.innerHeight,0.1,100
+            )
+            camera.position.set(10,10,10); // 相机位置
+            camera.lookAt(scene.position)
+
+            const pointLight = new THREE.PointLight(0xffffff);
+            pointLight.position.set(10, 10, -10);
+            scene.add(pointLight);
+
+            const geometry = new THREE.BoxGeometry(2,2,2) // 几何体
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x0000ff
+            }); // 材质
+            const cube = new THREE.Mesh(geometry, material); // 建立网格物件
+            cube.position.set(0, 0, 0);
+            scene.add(cube);
+
+            function animate() {
+                cube.rotation.x += 0.01
+                cube.rotation.y += 0.01
+            }
+
+            function render() {
+                animate()
+                requestAnimationFrame(render)
+                renderer.render(scene, camera)
+            }
+
+            // 監聽螢幕寬高變化來做簡單 RWD 設定
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight
+                camera.updateProjectionMatrix()
+                renderer.setSize(window.innerWidth, window.innerHeight)
+            })
+
+            render();
+		</script>
+	</body>
+</html>
