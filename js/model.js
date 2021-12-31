@@ -1,4 +1,5 @@
 let renderer, scene, camera;
+let cameraControl, statsUI;
 
 class Creeper {
   constructor() {
@@ -57,6 +58,14 @@ class Creeper {
   }
 }
 
+// 建立监测器
+function initStats() {
+  const stats = new Stats();
+  stats.setMode(0); //FPS mode
+  document.getElementById("stats").appendChild(stats.domElement);
+  return stats;
+}
+
 // 生成苦力怕 并加到场景
 function createCreeper() {
   const creeperObj = new Creeper();
@@ -82,10 +91,18 @@ function init() {
   let axes = new THREE.AxesHelper(25);
   scene.add(axes);
 
+  statsUI = initStats(); // 初始化
+
   // 渲染器設定
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0xeeeeee, 1.0); // 预设背景颜色
+
+  // 建立 OrbitControls
+  cameraControl = new THREE.OrbitControls(camera, renderer.domElement);
+  cameraControl.enableDamping = true; //启用阻尼效果
+  cameraControl.dampingFactor = 0.25; // 阻尼系数
+  cameraControl.autoRotate = true; //启用自动旋转
 
   // 加入地板
   const planeGeometry = new THREE.PlaneGeometry(60, 60);
@@ -110,7 +127,10 @@ function init() {
 }
 
 function render() {
+  cameraControl.update();
+  statsUI.update(); //
   requestAnimationFrame(render);
+
   renderer.render(scene, camera);
 }
 
